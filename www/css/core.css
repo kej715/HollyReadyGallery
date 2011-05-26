@@ -1,0 +1,341 @@
+.bottomBar 
+{
+	position: absolute;
+	width: 100%;
+	bottom: 0px;
+	left: 0px;
+    -webkit-box-sizing: border-box;
+    border-top: 1px solid #2d3642;
+    padding: 5px 0 5px 0;
+    background: url(../js/jqtouch/themes/apple/img/toolbar.png) #6d84a2 repeat-x;
+}
+
+.navigationButton
+{
+	display: inline-block;
+	padding: 20px 0 0 0;
+	margin: 0;
+	font-size: 10px;
+	text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #fff;
+	width: 24%;
+}
+
+.locationButton
+{
+	background: url(../icons/74-location.png) no-repeat center top;
+}
+
+.galleryButton
+{
+	background: url(../icons/98-palette.png) no-repeat center top;
+}
+
+.preferencesButton
+{
+	background: url(../icons/158-wrench-2.png) no-repeat center top;
+}
+
+.statementButton
+{
+	background: url(../icons/123-id-card.png) no-repeat center top;
+}
+
+.shareButton,
+.cancelButton
+{
+	width: 30%;
+    display: inline-block;
+    border-width: 0 12px;
+    padding: 10px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    text-decoration: inherit;
+    color: inherit;
+}
+
+.shareButton
+{
+    -webkit-border-image: url(../js/jqtouch/themes/apple/img/whiteButton.png) 0 12 0 12;
+    text-shadow: rgba(255, 255, 255, 0.7) 0 1px 0;
+}
+
+.cancelButton
+{
+    -webkit-border-image: url(../js/jqtouch/themes/apple/img/grayButton.png) 0 12 0 12;
+    color: #FFFFFF;
+}
+
+#facebook-share-container > div
+{
+	padding: 8px 0 0 0;
+}
+
+#facebook-share-image
+{
+	padding: 0 0 0 4px;
+}
+
+#facebook-share-title
+{
+	font-size: 14px;
+	font-weight: bold;
+}
+
+#facebook-share-description
+{
+	font-size: 12px;
+}
+
+#facebook-share-text
+{
+	font-size: 14px;
+	padding: 8px 0 0 0;
+	background-color: LightYellow;
+}
+
+#facebook-share-buttons
+{
+	text-align: center;
+	padding: 8px 0 0 0;
+}
+
+#tweet-container > div
+{
+	padding: 8px 0 0 0;
+}
+
+#tweet-image
+{
+	padding: 0 0 0 4px;
+}
+
+#tweet-title
+{
+	font-size: 14px;
+	font-weight: bold;
+}
+
+#tweet-description
+{
+	font-size: 12px;
+}
+
+#tweet-text
+{
+	font-size: 14px;
+	padding: 8px 0 0 0;
+	background-color: LightYellow;
+}
+
+#tweet-buttons
+{
+	text-align: center;
+	padding: 8px 0 0 0;
+}
+
+.titleBar
+{
+    -webkit-box-sizing: border-box;
+    border-bottom: 1px solid #2d3642;
+	position: absolute;
+	height: 40px;
+	width: 100%;
+	top: 0px;
+	left: 0px;
+    margin: 0;
+    padding: 0;
+	clear:both;
+    background: url(../js/jqtouch/themes/apple/img/toolbar.png) #6d84a2 repeat-x;
+}
+
+.titleBar > h1
+{
+    overflow: hidden;
+    line-height: 1em;
+    height: 30px;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: rgba(0, 0, 0, 0.4) 0px -1px 0;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #fff;
+}
+
+.titleBarToolRight1
+{
+	position: absolute;
+    top: 8px;
+    right: 6px;
+    margin: 0;
+    padding: 2px;
+    background: none;
+}
+
+.titleBarToolRight2
+{
+	position: absolute;
+    top: 8px;
+    right: 30px;
+    margin: 0;
+    padding: 2px;
+    background: none;
+}
+
+.titleBarToolLeft
+{
+	position: absolute;
+    top: 8px;
+    left: 6px;
+    margin: 0;
+    padding: 2px;
+    background: none;
+}
+
+.contentPane
+{
+	position: absolute;
+	width: 100%;
+	top: 40px;
+	left: 0px;
+    margin: 0;
+    padding: 0;
+	clear:both;
+    background: white;
+    overflow: hidden;
+}
+
+#controls > h4
+{
+	text-align: center;
+}
+
+.contactButtonContainer
+{
+	position: absolute;
+	padding: 0;
+	margin: 0;
+	border-width: 0;
+}
+
+.contactButton
+{
+	display: table-cell;
+	width: 200px;
+	height: 40px;
+	margin: 0;
+	padding: 0;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: rgba(0, 0, 0, 0.5) 0px -1px 0;
+    text-overflow: ellipsis;
+    text-decoration: none;
+	text-align: center;
+	vertical-align: middle;
+    white-space: nowrap;
+    -webkit-border-image: url(../js/jqtouch/themes/apple/img/toolButton.png) 0 5 0 5;
+}
+
+.contactButton > p > a
+{
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: rgba(0, 0, 0, 0.5) 0px -1px 0;
+    text-overflow: ellipsis;
+    text-decoration: none;
+	text-align: center;
+	vertical-align: middle;
+    white-space: nowrap;
+}
+
+#preferences > .contentPane
+{
+	background: rgb(197,204,211);
+}
+
+#sign-out-button > img
+{
+	margin: 0 8px 0 0;
+}
+
+.imageCell
+{
+	display: table-cell;
+	vertical-align: top;
+	padding: 0 4px 0 4px;
+	margin: 0;
+}
+
+.imageCell img
+{
+	text-align: center;
+	border: 1px solid gold;
+	padding: 0;
+}
+
+.imageTitle
+{
+	text-align: center;
+	font-weight: bold;
+}
+
+.imageContainer
+{
+	text-align: center;
+	padding: 0;
+	margin: 0;
+	border-width: 0;
+}
+
+.imageDescription
+{
+	text-align: center;
+}
+
+.sharingButtonsContainer
+{
+	display: -moz-inline-block;
+	display: inline-block;
+	position: relative;
+}
+
+.facebookShare
+{
+	display: -moz-inline-block;
+	display: inline-block;
+	position: relative;
+	padding: 0 2px 2px 20px;
+	margin: 10px 10px 0 0;
+	border: 2px solid #d8dfea;
+	background: url(../icons/facebook.gif) no-repeat left center;
+}
+
+.tweet
+{
+	display: -moz-inline-block;
+	display: inline-block;
+	position: relative;
+	padding: 0 2px 2px 20px;
+	margin: 10px 0 0 10px;
+	border: 2px solid #d8dfea;
+	background: url(../icons/bird_16x16.png) no-repeat left center;
+}
+
+.loadingProgress
+{
+	position: fixed;
+	width: 48px;
+	height: 48px;
+	display: inline;
+	visibility: visible;
+	z-index: 10;
+	background-color: rgba(0,0,0,0);
+}

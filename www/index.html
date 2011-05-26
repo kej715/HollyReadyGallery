@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>Ixonos Delivery</title>
+		<!-- Change this if you want to allow scaling -->
+		<meta name="viewport" content="width=default-width; user-scalable=no"/>
+		<meta name="format-detection" content="telephone=no"/>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+			
+        <link rel="stylesheet" href="js/jqtouch/jqtouch.min.css" type="text/css" media="screen" title="no title" charset="utf-8">
+        <link rel="stylesheet" href="js/jqtouch/themes/apple/theme.min.css" type="text/css" media="screen" title="no title" charset="utf-8">
+        <!-- link rel="stylesheet" href="js/touchscroll/touchscroll.css" type="text/css" media="screen" title="no title" charset="utf-8"-->
+        <link rel="stylesheet" href="css/core.css" type="text/css" media="screen" title="no title" charset="utf-8">
+		<!--
+        <link rel="stylesheet" href="delivery.css" type="text/css" media="screen" title="no title" charset="utf-8">
+		-->
+		<!-- iPad/iPhone specific css below, add after your main css -->
+		 <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
+		 <!--
+		 <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />		
+		 -->
+		<!-- If you application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www directory and include it here -->
+		<script type="text/javascript" charset="utf-8" src="phonegap.0.9.4.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/ChildBrowser.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/facebook.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/oauth.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/sha1.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/twitter.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/jquery-1.5.1.min.js"></script>
+        <script type="text/javascript" charset="utf-8" src="js/jqtouch/jqtouch.min.js"></script>
+        <script type="text/javascript" charset="utf-8" src="js/jqt.dynamicheight1.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/touchscroll/touchscroll.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="js/SAiOSKeychainPlugin.js"></script>
+		<!-- <script type="text/javascript" charset="utf-8" src="http://connect.facebook.net/en_US/all.js"></script> -->
+		<script type="text/javascript" charset="utf-8" src="js/main.js"></script>
+	</head>
+	<body>
+	
+        <div id="gallery">
+			<div id="header" class="titleBar">
+				<h1>Gallery</h1>
+				<img class="titleBarToolLeft" src="icons/16-play.png"/>
+				<img class="titleBarToolRight1" src="icons/65-note.png" width="12" height="13"/>
+				<img class="titleBarToolRight2" src="icons/01-refresh.png" width="12" height="13"/>
+			</div>
+			<div id="image-container" class="contentPane"></div>
+			<div id="footer" class="bottomBar">
+				<div class="navigationButton galleryButton">Art</div>
+				<div class="navigationButton locationButton">Contact</div>
+				<div class="navigationButton statementButton">Statement</div>
+				<div class="navigationButton preferencesButton">Preferences</div>
+			</div>
+        </div>
+	
+        <div id="contact">
+			<div class="titleBar">
+				<h1>Contact</h1>
+				<img class="titleBarToolRight1" src="icons/65-note.png" width="12" height="13"/>
+			</div>
+			<div id="contact-container" class="contentPane">
+				<div id="contact-container-address" class="contactButtonContainer"><div class="contactButton"></div></div>
+				<div id="contact-container-phone" class="contactButtonContainer"><div class="contactButton"></div></div>
+				<div id="contact-container-email" class="contactButtonContainer"><div class="contactButton"></div></div>
+			</div>
+			<div class="bottomBar">
+				<div class="navigationButton galleryButton">Art</div>
+				<div class="navigationButton locationButton">Contact</div>
+				<div class="navigationButton statementButton">Statement</div>
+				<div class="navigationButton preferencesButton">Preferences</div>
+			</div>
+        </div>
+	
+        <div id="facebookShare">
+			<div class="titleBar">
+				<h1>Share on Facebook</h1>
+				<img class="titleBarToolRight1" src="icons/65-note.png" width="12" height="13"/>
+			</div>
+			<form id="facebook-share-container" class="contentPane">
+				<div>
+					<div style="display:table-cell;vertical-align:top"><img id="facebook-share-image"/></div>
+					<div style="display:table-cell;vertical-align:top;padding: 0 0 0 4px">
+						<div id="facebook-share-title"></div>
+						<div id="facebook-share-description"></div>
+					</div>
+				</div>
+				<textarea id="facebook-share-text" rows="4"></textarea>
+				<div id="facebook-share-buttons">
+					<div class="shareButton">Share</div>
+					<div class="cancelButton">Cancel</div>
+				</div>
+			</form>
+			<div class="bottomBar">
+				<div class="navigationButton galleryButton">Art</div>
+				<div class="navigationButton locationButton">Contact</div>
+				<div class="navigationButton statementButton">Statement</div>
+				<div class="navigationButton preferencesButton">Preferences</div>
+			</div>
+        </div>
+	
+        <div id="tweet">
+			<div class="titleBar">
+				<h1>Tweet</h1>
+				<img class="titleBarToolRight1" src="icons/65-note.png" width="12" height="13"/>
+			</div>
+			<form id="tweet-container" class="contentPane">
+				<div>
+					<div style="display:table-cell;vertical-align:top"><img id="tweet-image"/></div>
+					<div style="display:table-cell;vertical-align:top;padding: 0 0 0 4px">
+						<div id="tweet-title"></div>
+						<div id="tweet-description"></div>
+					</div>
+				</div>
+				<textarea id="tweet-text" rows="4"></textarea>
+				<div id="tweet-buttons">
+					<div class="shareButton">Tweet</div>
+					<div class="cancelButton">Cancel</div>
+				</div>
+			</form>
+			<div class="bottomBar">
+				<div class="navigationButton galleryButton">Art</div>
+				<div class="navigationButton locationButton">Contact</div>
+				<div class="navigationButton statementButton">Statement</div>
+				<div class="navigationButton preferencesButton">Preferences</div>
+			</div>
+        </div>
+	
+        <div id="slideshow">
+			<div class="titleBar">
+				<h1>Gallery</h1>
+				<img class="titleBarToolLeft" src="icons/17-pause.png"/>
+				<img class="titleBarToolRight1" src="icons/65-note.png" width="12" height="13"/>
+			</div>
+			<div id="slideshow-container" class="contentPane">
+				<div class="imageCell">
+					<div class="imageTitle"></div>
+					<div class="imageContainer"><img/></div>
+					<div class="imageDescription"></div>
+					<div class="sharingButtonsContainer">
+						<div class="facebookShare">Share</div>
+						<div class="tweet">Tweet</div>
+					</div>
+				</div>
+			</div>
+			<div class="bottomBar">
+				<div class="navigationButton galleryButton">Art</div>
+				<div class="navigationButton locationButton">Contact</div>
+				<div class="navigationButton statementButton">Statement</div>
+				<div class="navigationButton preferencesButton">Preferences</div>
+			</div>
+        </div>
+	
+        <div id="statement">
+			<div class="titleBar">
+				<h1>Artist Statement</h1>
+				<img class="titleBarToolRight1" src="icons/65-note.png" width="12" height="13"/>
+				<img class="titleBarToolRight2" src="icons/01-refresh.png" width="12" height="13"/>
+			</div>
+			<div id="statement-container" class="contentPane"></div>
+			<div class="bottomBar">
+				<div class="navigationButton galleryButton">Art</div>
+				<div class="navigationButton locationButton">Contact</div>
+				<div class="navigationButton statementButton">Statement</div>
+				<div class="navigationButton preferencesButton">Preferences</div>
+			</div>
+        </div>
+			
+        <div id="preferences">
+            <div class="titleBar">
+                <h1>Preferences</h1>
+				<img class="titleBarToolRight1" src="icons/65-note.png" width="12" height="13"/>
+            </div>
+			<div class="contentPane">
+				<form id="controls"></form>
+				<div id="sign-out-button" class="whiteButton">
+					<img src="icons/facebook.gif"/><img src="icons/bird_16x16.png"/>Sign out
+				</div>
+			</div>
+			<div class="bottomBar">
+				<div class="navigationButton galleryButton">Art</div>
+				<div class="navigationButton locationButton">Contact</div>
+				<div class="navigationButton statementButton">Statement</div>
+				<div class="navigationButton preferencesButton">Preferences</div>
+			</div>
+        </div>
+	
+	</body>
+</html>
