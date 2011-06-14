@@ -33,6 +33,29 @@ com.kyrafre.gallery.Gallery.prototype.addLoadingAnimation = function()
 	anim.html("<img src=\"images/loading.gif\"/>");
 };
 
+com.kyrafre.gallery.Gallery.prototype.addSharingControls = function(container, pageSelector, imageObj)
+{
+    var sharingContainer = $("<div class=\"sharingButtonsContainer\"/>").appendTo(container);
+    
+    $("<div class=\"facebookShare\"/>").appendTo(sharingContainer)
+    .text("Share")
+    .click(function()
+    {
+        self.facebookRenderShare(imageObj, pageSelector);
+        return false;
+    });
+    
+    $("<div class=\"tweet\"/>").appendTo(sharingContainer)
+    .text("Tweet")
+    .click(function()
+    {
+        self.twitterRenderTweet(imageObj, pageSelector);
+        return false;
+    });
+    
+    return sharingContainer;
+};
+
 com.kyrafre.gallery.Gallery.prototype.applicationBecameActiveHandler = function()
 {
 	var self = this;
@@ -55,137 +78,93 @@ com.kyrafre.gallery.Gallery.prototype.applicationBecameActiveHandler = function(
 	});
 };
 
+com.kyrafre.gallery.Gallery.prototype.changeTile = function()
+{
+    var self = this;
+    
+    if (typeof self.imageMetadata === "undefined")
+    {
+        if (self.tileFlipTimerEnabled)
+            self.tileFlipTimer = setTimeout(function() {self.changeTile();}, self.tilesTimeoutDuration);
+
+        return;
+    }
+
+    var tile = self.tiles[Math.floor(Math.random() * self.tiles.length)];
+    var side = tile.children().eq(tile.data("isFront") == true ? 1 : 0);
+    self.loadTile(tile, $("img", side));
+};
+
 com.kyrafre.gallery.Gallery.prototype.displayError = function(textStatus, errorThrown)
 {
-	var error = "";
-	
-	if (typeof errorThrown === "string" && errorThrown !== "")
-		error = errorThrown;
-	else if (typeof errorThrown === "object" && typeof errorThrown.toString === "function")
-		error = errorThrown.toString();
-	else if (textStatus != null)
-		error = textStatus;
-	
-	if (error === "" || error === "error")
-		error = "The server is currently unavailable.";
-	
-	this.removeLoadingAnimation();
-	
-	navigator.notification.alert(error, function(){}, "Sorry", "Dismiss");
+	this.removeLoadingAnimation();	
+	navigator.notification.alert(this.extractErrorMessage(textStatus, errorThrown), function(){}, "Sorry", "Dismiss");
 };
 
 com.kyrafre.gallery.Gallery.prototype.displayImages = function()
 {
 	var self = this;
-	
-	var filter = "";
-	$("#controls ul").each(function(i)
-	{
-		var category = $(this);
-		var name = category.attr("name");
-
-		if (typeof name !== "undefined" && name !== "")
-		{
-			var values = "";
-			$("input:checked", category).each(function(i)
-			{
-				if (values.length > 0) values += ",";
-				values += this.value;
-			});
-			if (values.length > 0)
-			{
-				filter += (filter.length > 0 ? "&" : "?")
-						   + name + "=" + values;
-			}
-		}
-	});
-
-	self.addLoadingAnimation();
 	var container = $("#image-container");
+    container.empty();
+    if (typeof self.galleryScroller !== "undefined") delete self.galleryScroller;
+	self.imageLoadingQueue = [];
+	self.rightMostScrollTo = 0;
 
-	$.getJSON(self.properties.listImages + filter).then
-	(function(data, textStatus, jqXHR)
+	$.each(self.imageMetadata, function(i, obj)
 	{
-		self.removeLoadingAnimation();
+		obj.index = i;
+		var item = $("<div class=\"imageCell\"/>").appendTo(container);
+		var title = $("<div class=\"imageTitle\"/>").appendTo(item);
+		title.text(obj.title);
+		obj.imageContainer = $("<div class=\"imageContainer\"/>").appendTo(item);
+		var img = $("<img/>").appendTo(obj.imageContainer);
+		var description = $("<div class=\"imageDescription\"/>").appendTo(item);
+		description.text(obj.description);
+        var sharingContainer = self.addSharingControls(item, "#gallery", obj);
 
-		data.sort(function(a, b)
+		img.attr("src", "images/loading-300x233.png").load(function()
 		{
-			var s1 = a.title.toLowerCase();
-			var s2 = b.title.toLowerCase();
-			if (s1 < s2)
-			   return -1;
-			else if (s1 > s2)
-			   return 1;
+			obj.imageMaxHeight = self.contentHeight
+				- (title.outerHeight(true)
+				   + description.outerHeight(true)
+				   + sharingContainer.outerHeight(true)
+				   + 20);
+			obj.imageMaxWidth = self.contentWidth - 8;
+			obj.width = item.outerWidth(true);
+															   
+			if (i > 0)
+            {
+				var predecessor = self.imageMetadata[i - 1];
+				obj.position = predecessor.position + predecessor.width;
+			}
 			else
-			   return 0;
-		});
-
-		self.imageMetadata = data;
-		var width = self.contentWidth - 16;
-	 
-		container.empty();
-		delete self.galleryScroller;
-		self.imageLoadingQueue = [];
-		self.rightMostScrollTo = 0;
-
-		$.each(self.imageMetadata, function(i, obj)
-		{
-			obj.index = i;
-			var item = $("<div class=\"imageCell\"/>").appendTo(container);
-			var title = $("<div class=\"imageTitle\"/>").appendTo(item);
-			title.text(obj.title);
-			obj.imageContainer = $("<div class=\"imageContainer\"/>").appendTo(item);
-			var img = $("<img/>").appendTo(obj.imageContainer);
-			var description = $("<div class=\"imageDescription\"/>").appendTo(item);
-			description.text(obj.description);
-			var sharingContainer = $("<div class=\"sharingButtonsContainer\"/>").appendTo(item);
-
-			$("<div class=\"facebookShare\"/>").appendTo(sharingContainer)
-			.text("Share")
-			.click(function()
-			{
-				self.facebookRenderShare(obj, "#gallery");
-			});
-
-			$("<div class=\"tweet\"/>").appendTo(sharingContainer)
-			.text("Tweet")
-			.click(function()
-			{
-				self.twitterRenderTweet(obj, "#gallery");
-			});
-
-			img.attr("src", "images/loading-300x233.png").load(function()
-			{
-				obj.imageMaxHeight = self.contentHeight
-					- (title.outerHeight(true)
-					   + description.outerHeight(true)
-					   + sharingContainer.outerHeight(true)
-					   + 20);
-				obj.imageMaxWidth = width;
-				obj.width = item.outerWidth(true);
+				obj.position = 0;
 															   
-				if (i > 0)
-				{
-					var predecessor = self.imageMetadata[i - 1];
-					obj.position = predecessor.position + predecessor.width;
-				}
-				else
-					obj.position = 0;
-															   
-				if (i < 5)
-				{
-					self.imageLoadingQueue.push(obj);
-					self.rightMostIndex = self.imageLoadingQueue.length - 1;
-					self.loadImages(container);
-				}
-			});
-		});
-	},
-	function(jqXHR, textStatus, errorThrown)
-	{
-		self.displayError(textStatus, errorThrown);
-		self.removeLoadingAnimation();
-	});
+			if (i < 5)
+			{
+				self.imageLoadingQueue.push(obj);
+				self.rightMostIndex = self.imageLoadingQueue.length - 1;
+				self.loadImages(container);
+			}
+        });
+    });
+};
+
+com.kyrafre.gallery.Gallery.prototype.extractErrorMessage = function(textStatus, errorThrown)
+{
+	var error = "";
+	
+	if (typeof errorThrown === "string" && errorThrown !== "")
+        error = errorThrown;
+	else if (typeof errorThrown === "object" && typeof errorThrown.toString === "function")
+        error = errorThrown.toString();
+	else if (textStatus != null)
+        error = textStatus;
+	
+	if (error === "" || error === "error")
+        error = "The server is currently unavailable.";
+	
+    return error;
 };
 
 com.kyrafre.gallery.Gallery.prototype.facebookPost = function(artObject, sourcePage)
@@ -229,6 +208,65 @@ com.kyrafre.gallery.Gallery.prototype.facebookRenderShare = function(artObject, 
 	self.sharedObject = artObject;
 	self.sharingSourcePage = sourcePage;
 	self.goTo("#facebookShare", "flip");
+};
+
+com.kyrafre.gallery.Gallery.prototype.getImageList = function(successCallback, errorCallback)
+{
+	var self = this;
+	
+	var filter = "";
+	$("#controls ul").each(function(i)
+	{
+		var category = $(this);
+		var name = category.attr("name");
+        
+		if (typeof name !== "undefined" && name !== "")
+		{
+			var values = "";
+			$("input:checked", category).each(function(i)
+			{
+				if (values.length > 0) values += ",";
+				values += this.value;
+			});
+			if (values.length > 0)
+			{
+				filter += (filter.length > 0 ? "&" : "?")
+                + name + "=" + values;
+			}
+		}
+	});
+    
+    self.addLoadingAnimation();
+    
+	$.getJSON(self.properties.listImages + filter).then
+	(function(data, textStatus, jqXHR)
+	{
+		self.removeLoadingAnimation();
+        
+		data.sort(function(a, b)
+		{
+			var s1 = a.title.toLowerCase();
+			var s2 = b.title.toLowerCase();
+			if (s1 < s2)
+                return -1;
+			else if (s1 > s2)
+                return 1;
+			else
+                return 0;
+		});
+        
+		self.imageMetadata = data;
+        
+        if (typeof successCallback === "function")
+            successCallback(data);
+	},
+	function(jqXHR, textStatus, errorThrown)
+	{
+		self.removeLoadingAnimation();
+
+        if (typeof errorCallback === "function")
+            errorCallback(self.extractErrorMessage(textStatus, errorThrown));
+	});
 };
 
 com.kyrafre.gallery.Gallery.prototype.getProperties = function(callback)
@@ -378,19 +416,13 @@ com.kyrafre.gallery.Gallery.prototype.loadImage = function(imageObj, container)
 									 
 		if (self.imageLoadingQueue.length > 0)
 			self.loadImages(container);
-									 
-		if (typeof self.isAudioLoaded === "undefined")
-		{
-			self.isAudioLoaded = true;
-			self.loadAudio();
-		}
 	});
 };
 
 com.kyrafre.gallery.Gallery.prototype.loadImages = function(container)
 {
 	var self = this;
-	
+
 	if (self.imageLoadingQueue.length > 0)
 	{
 		var imageObj = self.imageLoadingQueue.splice(0, 1)[0];
@@ -427,6 +459,81 @@ com.kyrafre.gallery.Gallery.prototype.loadSlideshowImage = function()
 									+ description.outerHeight(true)
 									+ $(".sharingButtonsContainer", container).outerHeight(true)
 									+ 20)));
+};
+
+com.kyrafre.gallery.Gallery.prototype.loadTile = function(tile, image)
+{
+    var self = this;
+    
+    if (self.currentTileIndex >= self.imageMetadata.length)
+        self.currentTileIndex = 0;
+    
+    var imageObj = self.imageMetadata[self.currentTileIndex++];
+    var url = imageObj.url;
+    
+    image.attr("src", self.properties.renderImage
+               + "?img=" + encodeURIComponent(url)
+               + "&w=" + (tile.outerWidth(true) - 4)
+               + "&h=" + (tile.outerHeight(true) - 4));
+    image.unbind("click");
+    image.click(function(evt)
+    {
+        self.tileFlipTimerEnabled = false;
+
+        if (typeof self.tileFlipTimer !== "undefined")
+            clearTimeout(self.tileFlipTimer);
+
+        var overlay = $("<div class=\"selectedTile\"/>").appendTo(tile.parent());
+        var relativeY = evt.pageY - $("#header").outerHeight(true);
+        overlay.css(
+        {
+            width: "10px",
+            height: "10px",
+            left: evt.pageX + "px",
+            top: evt.pageY + "px"
+        });
+        var targetCSS = {
+            width: (self.contentWidth - 20) + "px",
+            height: (self.contentHeight - 20) + "px",
+            top: "10px",
+            left: "10px"
+        };
+        overlay.animate(targetCSS, function()
+        {
+            var title = $("<div class=\"selectedTileTitle\"/>").appendTo(overlay)
+            .text(imageObj.title);
+            var image = $("<img class=\"selectedTileImage\"/>").appendTo(overlay)
+            .load(function()
+            {
+                $(this).css("left", (overlay.outerWidth(true) - $(this).outerWidth(true)) / 2);
+            });
+            var description = $("<div class=\"selectedTileDescription\"/>").appendTo(overlay);
+                        
+            if (typeof imageObj.description !== "undefined")
+                description.text(imageObj.description);
+
+            var sharingContainer = self.addSharingControls(overlay, "#tiles", imageObj);
+            sharingContainer.css("left", (overlay.outerWidth(true) - sharingContainer.outerWidth(true)) / 2);
+
+            image.attr("src", self.properties.renderImage
+                       + "?img=" + encodeURIComponent(url)
+                       + "&w=" + (self.contentWidth - 26)
+                       + "&h=" + (self.contentHeight
+                                  - (title.outerHeight(true)
+                                     + description.outerHeight(true)
+                                     + sharingContainer.outerHeight(true)
+                                     + 26)));
+            overlay.click(function()
+            {
+                overlay.fadeOut(function()
+                {
+                    overlay.remove();
+                    self.tileFlipTimerEnabled = true;
+                    self.tileFlipTimer = setTimeout(function() {self.changeTile();}, self.tilesTimeoutDuration);
+                });
+            });                        
+        });
+    });
 };
 
 com.kyrafre.gallery.Gallery.prototype.playAudio = function()
@@ -765,6 +872,65 @@ com.kyrafre.gallery.Gallery.initSlideshowPage = function(gallery)
 	});	
 };
 
+com.kyrafre.gallery.Gallery.initTilesPage = function(gallery)
+{
+	var container = $("#tiles-container").empty();
+    var containerHeight = container.outerHeight(true);
+    var containerWidth = container.outerWidth(true);
+    var tileHeight = containerHeight / 2;
+    var tileWidth = containerWidth / 2;
+    gallery.currentTileIndex = 0;
+    gallery.tilesTimeoutDuration = 2000;
+    gallery.tileFlipTimerEnabled = false;
+    gallery.tiles = [];
+    
+    var quickFlipOptions = {
+        refresh: true
+    };
+    
+    var flipTile = function(tile, isFront)
+    {
+        tile.quickFlipper(quickFlipOptions);
+        tile.data("isFront", isFront);
+        
+        if (gallery.tileFlipTimerEnabled)
+            gallery.tileFlipTimer = setTimeout(function() {gallery.changeTile();}, gallery.tilesTimeoutDuration);
+    };
+
+    for (var row = 0; row < 2; ++row)
+    {
+        for (var col = 0; col < 2; ++col)
+        {
+            (function()
+            {
+                var tile = $("<div class=\"tile\"/>").appendTo(container)
+                    .css("width", tileWidth)
+                    .css("height", tileHeight)
+                    .css("left", col * tileWidth)
+                    .css("top", row * tileHeight)
+                    .data("isFront", true);
+
+                var front = $("<div/>").appendTo(tile);
+                $("<img src=\"images/loading-150x117.png\"/>").appendTo(front)
+                .load(function()
+                {
+                    flipTile(tile, true);
+                });
+
+                var back = $("<div/>").appendTo(tile);
+                $("<img src=\"images/loading-150x117.png\"/>").appendTo(back)
+                .load(function()
+                {
+                    flipTile(tile, false);
+                });
+
+                tile.quickFlip();
+                gallery.tiles.push(tile);
+            })();
+        }
+    }
+};
+
 com.kyrafre.gallery.Gallery.init = function()
 {
 	jQT.resetHeight();
@@ -792,17 +958,61 @@ com.kyrafre.gallery.Gallery.start = function(gallery)
 		$(".contentPane").height(gallery.contentHeight);
 		com.kyrafre.gallery.Gallery.initPreferencesPage(gallery);
 		com.kyrafre.gallery.Gallery.initSlideshowPage(gallery);
+		com.kyrafre.gallery.Gallery.initTilesPage(gallery);
 	 
+        $("#tiles").bind("pageAnimationEnd", function(event, info)
+        {
+            if (info.direction === "in")
+            {
+                if (gallery.filterChanged)
+                {
+                    if (typeof gallery.galleryScroller !== "undefined") delete gallery.galleryScroller;
+                    
+                    gallery.getImageList(function(images)
+                    {
+                        gallery.filterChanged = false;
+                        gallery.displayTiles();	  
+                    });
+                }
+                else if (gallery.tileFlipTimerEnabled)
+                    gallery.tileFlipTimer = setTimeout(function() {gallery.changeTile();}, gallery.tilesTimeoutDuration);
+            }
+        });
+        $("#tiles").bind("pageAnimationStart", function(event, info)
+        {
+            if (info.direction === "out")
+            {
+                if (typeof gallery.tileFlipTimer !== "undefined")
+                    clearTimeout(gallery.tileFlipTimer);
+            }
+        });
+        $("#tiles .titleBarToolRight2").click(function()
+        {
+            gallery.getImageList(function(images)
+            {
+                if (typeof gallery.galleryScroller !== "undefined") delete gallery.galleryScroller;
+                                 
+                gallery.filterChanged = false;
+                gallery.displayTiles();			
+            });
+        });
 		$("#gallery").bind("pageAnimationEnd", function(event, info)
 		{
 			if (info.direction === "in")
 			{
 				if (gallery.filterChanged)
 				{
-					gallery.displayImages();	  
-					gallery.filterChanged = false;
+                    gallery.getImageList(function(images)
+                    {
+                        gallery.filterChanged = false;
+                        gallery.displayImages();	  
+                    });
 				}
-				else if (typeof gallery.galleryScroller !== "undefined")
+				else if (typeof gallery.galleryScroller === "undefined")
+                {
+                    gallery.displayImages();
+                }
+                else
 				{
 					gallery.galleryScroller.setupScroller(true);
 					gallery.galleryScroller.scrollTo(gallery.currentSlideshowObject.position, 0);
@@ -828,8 +1038,11 @@ com.kyrafre.gallery.Gallery.start = function(gallery)
 		});
 		$("#gallery .titleBarToolRight2").click(function()
 		{
-			gallery.displayImages();			
-			gallery.filterChanged = false;
+            gallery.getImageList(function(images)
+            {
+                gallery.filterChanged = false;
+                gallery.displayImages();			
+            });
 		});
 		$("#gallery .titleBarToolLeft").click(function()
 		{
@@ -889,25 +1102,13 @@ com.kyrafre.gallery.Gallery.start = function(gallery)
 		{
 			gallery.renderHTML($("#statement-container"), gallery.properties.statement);			
 		});
+        $(".tilesButton").click(function()
+        {
+            gallery.goTo("#tiles", "dissolve");
+        });
 		$(".galleryButton").click(function()
 		{
 			gallery.goTo("#gallery", "dissolve");
-		});
-		$("#facebookShare .shareButton").click(function()
-		{
-			gallery.facebookPost(gallery.sharedObject, gallery.sharingSourcePage);
-		});
-		$("#facebookShare .cancelButton").click(function()
-		{
-			gallery.goTo(gallery.sharingSourcePage, "flip");
-		});
-		$("#tweet .shareButton").click(function()
-		{
-			gallery.twitterTweet(gallery.sharedObject, gallery.sharingSourcePage);
-		});
-		$("#tweet .cancelButton").click(function()
-		{
-			gallery.goTo(gallery.sharingSourcePage, "flip");
 		});
 		$(".locationButton").click(function()
 		{
@@ -921,6 +1122,22 @@ com.kyrafre.gallery.Gallery.start = function(gallery)
 		{
 			gallery.goTo("#preferences", "dissolve");
 		});
+        $("#facebookShare .shareButton").click(function()
+        {
+            gallery.facebookPost(gallery.sharedObject, gallery.sharingSourcePage);
+        });
+        $("#facebookShare .cancelButton").click(function()
+        {
+            gallery.goTo(gallery.sharingSourcePage, "flip");
+        });
+        $("#tweet .shareButton").click(function()
+        {
+            gallery.twitterTweet(gallery.sharedObject, gallery.sharingSourcePage);
+        });
+        $("#tweet .cancelButton").click(function()
+        {
+            gallery.goTo(gallery.sharingSourcePage, "flip");
+        });
 		$("#sign-out-button").click(function()
 		{
 			delete localStorage.facebookToken;
@@ -935,7 +1152,17 @@ com.kyrafre.gallery.Gallery.start = function(gallery)
 		gallery.scrollPosition = 0;
 		gallery.selectedPage = "#gallery";
 
-		gallery.displayImages();
+        gallery.getImageList(function()
+        {
+            gallery.tileFlipTimerEnabled = true;
+            gallery.changeTile();
+                             
+            if (typeof gallery.isAudioLoaded === "undefined")
+            {
+                gallery.isAudioLoaded = true;
+                gallery.loadAudio();
+            }
+        });
 	});
 };
 
@@ -973,6 +1200,7 @@ function onApplicationStart(service, keys)
 			com.kyrafre.gallery.Gallery.instance.twitterSvc = new com.kyrafre.twitter.Service(twitterAccessor);
 		}
 	};
+    
 	resolveKeys();
 }
 

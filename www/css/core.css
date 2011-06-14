@@ -20,7 +20,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     color: #fff;
-	width: 24%;
+	width: 18%;
 }
 
 .locationButton
@@ -41,6 +41,11 @@
 .statementButton
 {
 	background: url(../icons/123-id-card.png) no-repeat center top;
+}
+
+.tilesButton
+{
+	background: url(../icons/24-tiles.png) no-repeat center top;
 }
 
 .shareButton,
@@ -338,4 +343,45 @@
 	visibility: visible;
 	z-index: 10;
 	background-color: rgba(0,0,0,0);
+}
+
+.tile
+{
+	position: absolute;
+    margin: 0;
+    padding: 0;
+}
+
+.tile img
+{
+    margin: 2px;
+}
+
+.selectedTile
+{
+    background-color: white;
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.selectedTileTitle
+{
+	text-align: center;
+	font-weight: bold;
+}
+
+.selectedTileImage
+{
+	position: relative;
+	padding: 0;
+	border-width: 0;
+}
+
+.selectedTileDescription
+{
+	text-align: center;
 }
