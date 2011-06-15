@@ -309,8 +309,7 @@ com.kyrafre.gallery.Gallery.prototype.loadAudio = function()
 	var self = this;
 	
 	$.getJSON(self.properties.listAudio, function(audioObjects)
-	{
-			  
+	{			  
 		audioObjects.sort(function(a, b)
 		{
 			var s1 = a.name;
@@ -543,11 +542,7 @@ com.kyrafre.gallery.Gallery.prototype.playAudio = function()
 	if (self.isAudioOn)
 	{
 		if (self.media.length < 1)
-		{
-			self.addLoadingAnimation();
 			self.queueAudio();
-			self.removeLoadingAnimation();
-		}
 		
 		self.media[0].play();
 
